@@ -1,0 +1,19 @@
+name: repository
+description: A new brick created with the Mason CLI.
+
+version: 0.1.0+1
+
+environment:
+  mason: ">=0.1.0-dev.51 <0.1.0"
+
+vars:
+  projectName:
+    type: string
+    description: Project name
+    default: example
+    prompt: What is the name of the project? 
+  name:
+    type: string
+    description: Repository name
+    default: repository
+    prompt: What is the name of the repository?
