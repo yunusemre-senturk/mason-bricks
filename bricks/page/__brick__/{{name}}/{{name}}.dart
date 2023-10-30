@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:route_map/route_map.dart';
 import 'package:{{projectName.snakeCase()}}/core/base/base_widget.dart';
-import 'package:{{projectName.snakeCase()}}/app/page/{{name.snakeCase()}}/{{name.snakeCase()_vm.dart';
+import 'package:{{projectName.snakeCase()}}/app/page/{{name.snakeCase()}}/{{name.snakeCase()}}_vm.dart';
 
 
 @RouteMap()
