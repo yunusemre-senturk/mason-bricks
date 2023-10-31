@@ -53,7 +53,7 @@ Flutter'da mason_cli kütüphanesi, hızlı ve tekrar kullanılabilir class, wid
     <br><img width="375" alt="image" src="https://github.com/yunusemre-senturk/mason-bricks/assets/85076777/72f573f8-8a56-46e0-856a-838129665ac9">
 
 
-7.	Yaptığımız işlem ‘__bricks__’ dosyasının içerisine bir adet dosya oluşturup bu dosyanın ismini de brick i kullanmak istediğimiz de sorduğumuz sorduğumuz ‘name’ i veriyoruz kullanım şekli ‘ {{name}} ’ şeklinde olmalıdır. Verilen isminin hangi notasyon ile yazılmasını istiyorsak ‘.snakeCase()’ gibi veriyoruz. <a id="tiklanabilirMetin" href="https://github.com/yunusemre-senturk/mason-bricks/new/main?readme=1#masonda-kullan%C4%B1lacak-notasyonlar">Notasyonlar için tıklayınız</a>
+7.	Yaptığımız işlem ‘__bricks__’ dosyasının içerisine bir adet dosya oluşturup bu dosyanın ismini de brick i kullanmak istediğimiz de sorduğumuz sorduğumuz ‘name’ i veriyoruz kullanım şekli ‘ {{name}} ’ şeklinde olmalıdır. Verilen isminin hangi notasyon ile yazılmasını istiyorsak ‘.snakeCase()’ gibi veriyoruz. Notasyonlar aşağıda mevcuttur.
 
 
 ## Github üzerinden bricks kullanımı
