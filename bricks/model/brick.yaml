@@ -1,0 +1,14 @@
+name: model
+description: A new brick created with the Mason CLI.
+
+version: 0.1.0+1
+
+environment:
+  mason: ">=0.1.0-dev.51 <0.1.0"
+
+vars:
+  modelName:
+    type: string
+    description: Model name
+    default: repository
+    prompt: What is the name of the model?
