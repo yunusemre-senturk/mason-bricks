@@ -55,6 +55,8 @@ Flutter'da mason_cli kütüphanesi, hızlı ve tekrar kullanılabilir class, wid
 
 7.	Yaptığımız işlem ‘__bricks__’ dosyasının içerisine bir adet dosya oluşturup bu dosyanın ismini de brick i kullanmak istediğimiz de sorduğumuz sorduğumuz ‘name’ i veriyoruz kullanım şekli ‘ {{name}} ’ şeklinde olmalıdır. Verilen isminin hangi notasyon ile yazılmasını istiyorsak ‘.snakeCase()’ gibi veriyoruz. Notasyonlar aşağıda mevcuttur.
 
+8.	!! Kullandığınız yada kendi oluşturdunuz bir brick de değişiklik olduğunda 'mason upgrade' komutunu çalıştırarak yapılan değişiklikleri alabilirsiniz. Aksi taktirde yapılan değişiklikler gelmeyecektir ve eski düzende kullanmaya devam edecektir
+
 
 ## Github üzerinden bricks kullanımı
 
