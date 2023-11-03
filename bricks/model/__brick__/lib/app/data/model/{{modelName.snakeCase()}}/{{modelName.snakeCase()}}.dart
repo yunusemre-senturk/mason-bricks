@@ -7,7 +7,7 @@ part '{{modelName.snakeCase()}}.g.dart';
 @JsonSerializable()
 class {{modelName.pascalCase()}} {
   
-  {{modelName.pascalCase()}}({});
+  {{modelName.pascalCase()}}();
 
   factory {{modelName.pascalCase()}}.fromJson(Map<String, dynamic> json) {
     return _${{modelName.pascalCase()}}FromJson(json);
