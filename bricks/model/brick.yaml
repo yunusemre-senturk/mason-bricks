@@ -10,5 +10,5 @@ vars:
   modelName:
     type: string
     description: Model name
-    default: repository
+    default: model
     prompt: What is the name of the model?
