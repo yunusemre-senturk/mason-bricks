@@ -1,0 +1,53 @@
+name: pipeline_dev
+
+version: 0.1.0+1
+environment:
+  mason: ">=0.1.0-dev.51 <0.1.0"
+
+vars:
+  projectName:
+    type: string
+    description: Project name
+    default: pdks
+    prompt: Proje ismi? 
+  ## --- ANDROID --- 
+  androidServerEndpoint: 
+    type: string
+    description: Server Endpoint
+    default: AppCenterAndroidConnection
+    prompt: Android için kullanılacak Server Endpoint ismi? 
+  androidAppSlug:
+    type: string
+    description: Android sürümünün dizinini belirlemek için olan yer
+    prompt: Android dosyasının nereye oluşturulmasını istiyorsunuz? 
+  ## --- IOS ---
+  certSecureFile: 
+    type: string
+    description: Certificates
+    default: Certificates.p12
+    prompt: Ios için kullanacağınız sertifika?
+  provProfileSecureFile: 
+    type: string
+    description: Profile Secure File
+    prompt: Profile Secure File nedir?
+  secureFile:
+    type: string
+    description: Secure File and Display Name
+    prompt: Secure File ve Display name ne olacak - örn:"ExportOptions.plist"?
+  iosServerEndpoint: 
+    type: string
+    description: Server Endpoint
+    default: AppCenterIOSConnection
+    prompt: Ios için kullanılacak Server Endpoint ismi? 
+  iosAppSlug:
+    type: string
+    description: Ios sürümünün dizinini belirlemek için olan yer
+    prompt: Ios dosyasının nereye oluşturulmasını istiyorsunuz? 
+  groupId:
+    type: number
+    description: Grup id 
+    prompt: Projenin Grup id si nedir?
+  azureProjectName:
+    type: string
+    description: Azure Projesinin İsmi
+    prompt: Azure projesinin ismi nedir?
