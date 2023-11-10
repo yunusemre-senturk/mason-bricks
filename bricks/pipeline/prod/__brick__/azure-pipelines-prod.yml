@@ -1,0 +1,277 @@
+trigger: none
+  
+variables:
+- group: app_version
+- name : appMajor
+  value: $[variables.major]
+- name : appMinor
+  value: $[variables.minor]
+- name : appPatch
+  value: $[variables.patch]
+- name : appRevision
+  value: $[variables.revision]
+- name : appBuildNumber
+  value: $[variables.buildNumber]
+- name : localBuildName
+  value: $(appMajor).$(appMinor).$[$(appPatch)+1]
+- name : localBuildNumber
+  value: $(appBuildNumber)
+
+stages:
+  - stage: FlutterAndroidIOSBuild
+    displayName: FlutterPipeline
+    jobs:
+      - job: FlutterPipelineJob
+        displayName: FlutterPipeline 
+        pool:
+          vmImage: 'macOS-latest' 
+
+        steps:
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |       
+              echo $[$(localBuildNumber)+$(appRevision)+1]      
+              echo $(localBuildName)  
+              echo $(Build.SourceVersionMessage)
+
+        - task: JavaToolInstaller@0
+          displayName: 'Java kur.'
+          inputs:
+            versionSpec: '11'
+            jdkArchitectureOption: 'x64'
+            jdkSourceOption: 'PreInstalled'
+            
+        - task: FlutterInstall@0
+          displayName: 'Flutter kur.'
+          inputs:
+            channel: 'stable'
+            version: 'latest'
+        
+        - task: Bash@3
+          displayName: 'Flutter paketleri kur.'
+          inputs:
+            targetType: 'inline'
+            script: '$(FlutterToolPath)/flutter clean && $(FlutterToolPath)/flutter pub get'
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+        - task: Bash@3
+          displayName: 'Flutter dil dosyası yarat.'
+          inputs:
+            targetType: 'inline'
+            script: '$(FlutterToolPath)/flutter gen-l10n'
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+        - task: Bash@3
+          displayName: 'Flutter kodları yarat.'
+          inputs:
+            targetType: 'inline'
+            script: '$(FlutterToolPath)/flutter pub run build_runner build --delete-conflicting-outputs'
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+        - task: DownloadSecureFile@1
+          displayName: 'KeyProperties getir'
+          name: keyProperties
+          inputs:
+            secureFile: 'key.properties'
+        - script: |
+            echo Installing $(keyProperties.secureFilePath) to the trusted CA directory...
+            sudo chown root:root $(keyProperties.secureFilePath)
+            sudo chmod a+r $(keyProperties.secureFilePath)
+            cd android/
+            touch key.properties
+            sudo mv $(keyProperties.secureFilePath) /Users/runner/work/1/s/android/key.properties
+          displayName: 'KeyProperties getir'
+        - task: DownloadSecureFile@1
+          name: keyStore
+          inputs:
+            secureFile: 'key.keystore'
+        - script: |
+            echo Installing $(keyStore.secureFilePath) to the trusted CA directory...
+            sudo chown root:root $(keyStore.secureFilePath)
+            sudo chmod a+r $(keyStore.secureFilePath)
+            cd android/app/
+            touch key.keystore
+            sudo mv $(keyStore.secureFilePath) /Users/runner/work/1/s/android/app/key.keystore
+          displayName: 'KeyStore getir'
+          
+        - task: Bash@3
+          displayName: 'AppBundle oluştur.'
+          inputs:
+            targetType: 'inline'
+            script: $(FlutterToolPath)/flutter build appbundle --obfuscate --split-debug-info=./gs/build/outputs  --release  --flavor production --target lib/main_production.dart --build-number  $[$(localBuildNumber)+1] --build-name  $(localBuildName)
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+        - task: CopyFiles@2
+          displayName: 'AppBundle dizine kopyala.'
+          inputs:
+            contents: '**/*.aab'
+            targetFolder: '$(build.artifactStagingDirectory)'
+          
+        - task: AppCenterDistribute@3
+          inputs:
+            serverEndpoint: 'GSAppCenterAndroidConnection'
+            appSlug: 'Koctas-Apps/GucumuzSensin_Android'
+            appFile: '**/app-production-release.aab'
+            symbolsOption: 'Android'
+            releaseNotesOption: 'input'
+            releaseNotesInput: '$(Build.SourceVersionMessage)'
+            destinationType: 'groups'
+        - task: GooglePlayRelease@4
+          inputs:
+            serviceConnection: 'googlePlayServiceConnection-Kurumsal Uygulamalar'
+            applicationId: 'tr.com.koctas.pdks'
+            action: 'SingleBundle'
+            bundleFile: '**/app-production-release.aab'
+            track: 'production'
+            languageCode: 'tr_TR'
+        - task: Bash@3
+          displayName: 'Huawei AppGalery de paylaş'
+          inputs:
+            targetType: 'inline'
+            ## app id değişecek "104295831" 'https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=104295831&suffix=aab'
+            script: |
+              # İlk curl komutu ile OAuth2 tokenini alın
+                  curl_response=$(curl --location 'https://connect-api.cloud.huawei.com/api/oauth2/v1/token' \
+                    --header 'Content-Type: application/json' \
+                    --data '{
+                        "client_id": "$(huawei_client_id)",
+                        "client_secret": "$(huawei_client_secret)",
+                        "grant_type": "client_credentials"
+                    }')
+              
+                  access_token=$(echo "$curl_response" | jq -r '.access_token')
+                  echo "$curl_response"
+                  # İkinci curl komutunu çalıştırın ve önceki adımda alınan access_token ile gönderin
+                  upload_url_response=$(curl --location 'https://connect-api.cloud.huawei.com/api/publish/v2/upload-url?appId=104295831&suffix=aab' \ 
+                    --header 'client_id: $(huawei_client_id)' \
+                    --header "Authorization: Bearer $access_token")
+              
+                  # İkinci curl komutunun yanıtını ayrıştırın ve authCode ile uploadURL'yi alın
+                  authCode=$(echo "$upload_url_response" | jq -r '.authCode')
+                  uploadURL=$(echo "$upload_url_response" | jq -r '.uploadUrl')
+                  
+                  # Üçüncü curl komutunu çalıştırın ve önceki adımlardan alınan authCode ve uploadURL ile gönderin
+                  final_response=$(curl --location 'https://developerfile7.hicloud.com:443/FileServer/uploadFile' \
+                    --header 'Accept: application/json' \
+                    --form 'file=@"/Users/runner/work/1/a/build/app/outputs/bundle/productionRelease/app-production-release.aab"' \
+                    --form "authCode=$authCode" \
+                    --form "fileCount=1")
+              
+                  # Üçüncü curl komutunun yanıtını ayrıştırın ve fileDestUrl ile size değerlerini alın
+                  fileDestUrl=$(echo "$final_response" | jq -r '.result.UploadFileRsp.fileInfoList[0].fileDestUlr')
+                  size=$(echo "$final_response" | jq -r '.result.UploadFileRsp.fileInfoList[0].size')
+                  echo "$final_response"
+                  echo "$fileDestUrl"
+                  echo "$size"
+                  echo "{
+                        "fileType": 5,
+                        "files": [
+                            {
+                                "fileDestUrl": "$fileDestUrl",
+                                "fileName": "app-production-release.aab",
+                                "size": $size
+                            }
+                        ]
+                    }"
+                  # Dördüncü curl komutunu çalıştırın ve önceki adımlardan alınan fileDestUrl ve size ile gönderin
+                  put_response=$(curl --location --request PUT "https://connect-api.cloud.huawei.com/api/publish/v2/app-file-info?appId=104295831" \
+                    --header 'client_id: $(huawei_client_id)' \
+                    --header 'Content-Type: application/json' \
+                    --header "Authorization: Bearer $access_token" \
+                    --data '{
+                        "fileType": 5,
+                        "files": [
+                            {
+                                "fileDestUrl": "'"$fileDestUrl"'",
+                                "fileName": "app-production-release.aab",
+                                "size": '"$size"'
+                            }
+                        ]
+                    }')
+              
+                  # Dördüncü curl komutunun yanıtını ekrana yazdırın
+                  echo "$put_response"
+        - task: CocoaPods@0
+          displayName: 'CocoaPods kur'
+          inputs:
+            forceRepoUpdate: true
+            projectDirectory: 'ios'
+        
+        - task: InstallAppleCertificate@2
+          displayName: 'CertificatesDisburation yükle'
+          inputs:
+            certSecureFile: 'CertificatesDisburation.p12'
+            certPwd: '$(certificatePassword)'
+            keychain: 'temp'
+            
+        - task: InstallAppleProvisioningProfile@1
+          displayName: 'GucumuzSensinAppStore yükle'
+          inputs:
+            provisioningProfileLocation: 'secureFiles'
+            provProfileSecureFile: 'GucumuzSensinAppStore.mobileprovision'
+            removeProfile: false
+
+        - task: Bash@3
+          displayName: 'ipa oluştur.'
+          inputs:
+            targetType: 'inline'
+            script: $(FlutterToolPath)/flutter build ipa  --no-codesign  --obfuscate --split-debug-info=./gs/build/outputs  --release  --flavor production --target lib/main_production.dart --build-number  $[$(appRevision)+1] --build-name  $(localBuildName)
+            workingDirectory: '$(System.DefaultWorkingDirectory)'
+        - task: DownloadSecureFile@1
+          displayName: 'ExportOptionsAppStore.plist getir'
+          name: exportOptionsPlistFile
+          inputs:
+            secureFile: 'ExportOptionsAppStore.plist'  
+        - script: |
+            echo Installing $(exportOptionsPlistFile.secureFilePath) to the trusted CA directory...
+            sudo chown root:root $(exportOptionsPlistFile.secureFilePath)
+            sudo chmod a+r $(exportOptionsPlistFile.secureFilePath)
+            touch ExportOptionsAppStore.plist
+            sudo mv $(exportOptionsPlistFile.secureFilePath) /Users/runner/work/1/s/build/ios/archive/ExportOptionsAppStore.plist
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: 'xcodebuild -exportArchive -archivePath "/Users/runner/work/1/s/build/ios/archive/Runner.xcarchive" -exportPath "App" -exportOptionsPlist "/Users/runner/work/1/s/build/ios/archive/ExportOptionsAppStore.plist"'
+
+        - task: CopyFiles@2
+          displayName: 'ipa dizine kopyala.'
+          inputs:
+            contents: '**/pdks.ipa'
+            targetFolder: '$(build.artifactStagingDirectory)'
+
+
+        - task: AppCenterDistribute@3
+          displayName: 'AppCenter da yayınla.'
+          inputs:
+            serverEndpoint: 'GSAppCenterIOSConnection'
+            appSlug: 'Koctas-Apps/GucumuzSensin_IOS'
+            appFile: '**/pdks.ipa'
+            releaseNotesOption: 'input'
+            releaseNotesInput: '$(Build.SourceVersionMessage)'
+            destinationType: 'groups'
+
+        - task: AppStoreRelease@1
+          inputs:
+            serviceEndpoint: 'appleStoreServiceConnection-Kurumsal Uygulamalar'
+            appIdentifier: 'tr.com.koctas.gucumuzsensin'
+            appType: 'iOS'
+            releaseTrack: 'TestFlight'
+            ipaPath: '**/pdks.ipa'
+            shouldSkipWaitingForProcessing: true
+            shouldSkipSubmission: true
+            appSpecificId: '6446119264'
+
+        - task: PublishBuildArtifacts@1
+          displayName: 'Publish Artifacts for IOS'
+        
+        - task: Bash@3
+          displayName: 'Versiyon numarasını guncelle'
+          env:
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          inputs:
+            targetType: 'inline'
+            script: |
+                    echo $SYSTEM_ACCESSTOKEN | az devops login --organization https://dev.azure.com/devops-koctas
+                    az pipelines variable-group variable update --group-id 1 --name "patch" --value "$[$(patch)+1]" --org "https://dev.azure.com/devops-koctas" --project "Agile - Kurumsal Uygulamalar"
+                    az pipelines variable-group variable update --group-id 1 --name "revision" --value "0" --org "https://dev.azure.com/devops-koctas" --project "Agile - Kurumsal Uygulamalar"
+
+            
