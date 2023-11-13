@@ -109,7 +109,7 @@ stages:
           inputs:
             contents: '**/*.aab'
             targetFolder: '$(build.artifactStagingDirectory)'
-          
+          # TODO! if sorgusu yapılacak 
         - task: AppCenterDistribute@3
           inputs:
             serverEndpoint: '{{androidServerEndpoint}}' ## burası
@@ -144,20 +144,20 @@ stages:
             script: $(FlutterToolPath)/flutter build ipa  --no-codesign  --obfuscate --split-debug-info=./ustabilir_mobile/build/outputs  --release  --flavor development --target lib/main_development.dart --build-number  $[$(appRevision)+1] --build-name  $(localBuildName)
             workingDirectory: '$(System.DefaultWorkingDirectory)'
         - task: DownloadSecureFile@1
-          displayName: '{{secureFile}} getir' ##ExportOptions.plistt bunlar aynı parametre olacak 
+          displayName: '{{exportOption}} getir' ##ExportOptions.plistt bunlar aynı parametre olacak 
           name: exportOptionsPlistFile
           inputs:
-            secureFile: '{{secureFile}}'  ## ismi dışarıdan alıncaak 
+            secureFile: '{{exportOption}}'  ## ismi dışarıdan alıncaak 
         - script: |
             echo Installing $(exportOptionsPlistFile.secureFilePath) to the trusted CA directory...
             sudo chown root:root $(exportOptionsPlistFile.secureFilePath)
             sudo chmod a+r $(exportOptionsPlistFile.secureFilePath)
-            touch {{secureFile}}
-            sudo mv $(exportOptionsPlistFile.secureFilePath) /Users/runner/work/1/s/build/ios/archive/{{secureFile}}
+            touch {{exportOption}}
+            sudo mv $(exportOptionsPlistFile.secureFilePath) /Users/runner/work/1/s/build/ios/archive/{{exportOption}}
         - task: Bash@3
           inputs:
             targetType: 'inline'
-            script: 'xcodebuild -exportArchive -archivePath "/Users/runner/work/1/s/build/ios/archive/Runner.xcarchive" -exportPath "App" -exportOptionsPlist "/Users/runner/work/1/s/build/ios/archive/{{secureFile}}"'
+            script: 'xcodebuild -exportArchive -archivePath "/Users/runner/work/1/s/build/ios/archive/Runner.xcarchive" -exportPath "App" -exportOptionsPlist "/Users/runner/work/1/s/build/ios/archive/{{exportOption}}"'
 
         - task: CopyFiles@2
           displayName: 'ipa dizine kopyala.'

@@ -1,0 +1,68 @@
+name: pipeline_prod
+description: A new brick created with the Mason CLI.
+
+version: 0.1.0+1
+environment:
+  mason: ">=0.1.0-dev.51 <0.1.0"
+
+vars:
+  projectName:
+    type: string
+    description: Project name
+    default: pdks
+    prompt: Pubspec yaml içerisinde name olan alanın adı nedir?
+  # --- Android ---
+  androidServerEndpoint: 
+    type: string
+    description: Server Endpoint
+    #default: AppCenterAndroidConnection
+    prompt:  Azure app center bağlantı noktasının ismi? (Android) 
+  androidAppSlug:
+    type: string
+    description: Android sürümünün dizinini belirlemek için olan yer
+    prompt: Azure app center bağlantı noktasının ismi? (Android)
+  serviceConnection:
+    type: string
+    description: Google play service connection ismi
+    prompt: Google play service connection ismi nedir?
+  applicationId:
+    type: string
+    description: Uygulamanın application id 
+    prompt: Uygulamanın application id si nedir?
+  # --- Huawei ---
+  huaweiAppId: 
+    type: number
+    description: Uygulamanın huawei cloud una yakdolurken kullanılan app id si
+    prompt: Uygulamanın App id si nedir? (Huawei cihazlar için)
+  # --- IOS ----
+  certSecureFile: 
+    type: string
+    description: Certificates
+    default: CertificatesDisburation.p12
+    prompt: Ios için kullanacağınız sertifika?
+  provProfileSecureFile: 
+    type: string
+    description: Profile Secure File
+    prompt: Profile Secure File adı nedir?
+  exportOption:
+    type: string
+    description: Secure File and Display Name
+    prompt: ExportOptions.plist adını değiştirdiyseniz yazınız?
+  iosServerEndpoint: 
+    type: string
+    description: Server Endpoint
+    # default: AppCenterIOSConnection
+    prompt: Azure App center bağlantı noktasının ismi?
+  iosAppSlug:
+    type: string
+    description: Ios sürümünün dizinini belirlemek için olan yer
+    prompt: App Center ios proje yolu? 
+  groupId:
+    type: number
+    description: Grup id 
+    prompt: Projenin Grup id si nedir?
+  azureProjectName:
+    type: string
+    description: Azure Projesinin İsmi
+    prompt: Azure projesinin ismi nedir?
+  

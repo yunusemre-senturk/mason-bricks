@@ -9,18 +9,17 @@ vars:
   projectName:
     type: string
     description: Project name
-    default: pdks
-    prompt: Proje ismi? 
+    prompt: Pubspec yaml içerisinde name olan alanın adı nedir(android)?
   ## --- ANDROID --- 
   androidServerEndpoint: 
     type: string
     description: Server Endpoint
-    default: AppCenterAndroidConnection
-    prompt: Android için kullanılacak Server Endpoint ismi? 
+    #default: AppCenterAndroidConnection
+    prompt: Azure app center bağlantı noktasının ismi? 
   androidAppSlug:
     type: string
     description: Android sürümünün dizinini belirlemek için olan yer
-    prompt: Android dosyasının nereye oluşturulmasını istiyorsunuz? 
+    prompt: App center android proje yolu? 
   ## --- IOS ---
   certSecureFile: 
     type: string
@@ -30,20 +29,21 @@ vars:
   provProfileSecureFile: 
     type: string
     description: Profile Secure File
-    prompt: Profile Secure File nedir?
-  secureFile:
+    prompt: Profile Secure File adı nedir?
+  exportOption:
     type: string
     description: Secure File and Display Name
-    prompt: Secure File ve Display name ne olacak - örn:"ExportOptions.plist"?
+    defualt: ExportOptions.plist
+    prompt: ExportOptions.plist adını değiştirdiyseniz yazınız.
   iosServerEndpoint: 
     type: string
     description: Server Endpoint
-    default: AppCenterIOSConnection
-    prompt: Ios için kullanılacak Server Endpoint ismi? 
+    # default: AppCenterIOSConnection
+    prompt: Azure App center bağlantı noktasının ismi? 
   iosAppSlug:
     type: string
     description: Ios sürümünün dizinini belirlemek için olan yer
-    prompt: Ios dosyasının nereye oluşturulmasını istiyorsunuz? 
+    prompt: App Center ios proje yolu? 
   groupId:
     type: number
     description: Grup id 
