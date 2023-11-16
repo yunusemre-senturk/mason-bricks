@@ -10,10 +10,8 @@ vars:
   projectName:
     type: string
     description: Project name
-    default: example
     prompt: What is the name of the project? 
   name:
     type: string
     description: Page name
-    default: repository
     prompt: What is the name of the page?

@@ -19,8 +19,6 @@ import 'package:{{projectName.snakeCase()}}/core/interceptor/error_interceptor.d
 import 'package:{{projectName.snakeCase()}}/core/interceptor/log_interceptor.dart';
 import 'package:{{projectName.snakeCase()}}/core/interceptor/token_interceptor.dart';
 import 'package:{{projectName.snakeCase()}}/core/source/app_config_remote.dart';
-import 'package:{{projectName.snakeCase()}}/store_opening_system/employee/data/service/store_employee_service.dart';
-import 'package:{{projectName.snakeCase()}}/store_opening_system/manager/data/service/store_api_service.dart';
 
 @module
 abstract class AppModule {

@@ -5,11 +5,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:{{projectName.snakeCase()}}/app/data/model/great_ideas/ideas/ideas.dart';
 import 'package:{{projectName.snakeCase()}}/core/widget/image_network.dart';
-import 'package:{{projectName.snakeCase()}}/store_opening_system/manager/data/model/store/photo/store_photo.dart';
 import 'package:route_map/route_map.dart';
-import '../../app/data/model/school_recommendation/school_form.dart';
 
 @RouteMap(fullScreenDialog: true)
 class MediaViewerPage extends StatefulWidget {
@@ -79,43 +76,6 @@ class _MediaViewerPageState extends State<MediaViewerPage> {
                       imageUrl: item,
                     );
                   }
-                  if (item is IdeaPhoto) {
-                    return ImageNetwork(
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.contain,
-                        )),
-                      ),
-                      imageUrl: item.url,
-                    );
-                  }
-                  if (item is Photos) {
-                    return ImageNetwork(
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.contain,
-                        )),
-                      ),
-                      imageUrl: item.url,
-                    );
-                  }
-                  if (item is StorePhoto) {
-                    return ImageNetwork(
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.contain,
-                        )),
-                      ),
-                      imageUrl: item.url,
-                    );
-                  }
-
                   if (item is String) {
                     return ImageNetwork(
                       imageBuilder: (context, imageProvider) => Container(
